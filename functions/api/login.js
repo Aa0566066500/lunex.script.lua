@@ -33,12 +33,18 @@ export async function onRequestPost(context) {
       });
     }
 
+    // إنشاء جلسة عبر الكوكيز
+    const userData = JSON.stringify({ id: user.id, username: user.username, email: user.email });
+
     return new Response(JSON.stringify({ 
       success: true, 
       message: 'تم تسجيل الدخول بنجاح', 
       user: { id: user.id, username: user.username, email: user.email } 
     }), {
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 
+        'Content-Type': 'application/json',
+        'Set-Cookie': `lunex_session=${encodeURIComponent(userData)}; Path=/; Secure; SameSite=Lax; Max-Age=86400`
+      }
     });
   } catch (err) {
     return new Response(JSON.stringify({ success: false, error: err.message }), {
