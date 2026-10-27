@@ -3,10 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - lunes.script</title>
+    <title>لوحة التحكم - lunex.script</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <style>body { font-family: 'Cairo', sans-serif; }</style>
+    <script>
+        // التحقق الفوري من تسجيل الدخول عند فتح لوحة التحكم
+        const user = localStorage.getItem('lunex_user');
+        if (!user) {
+            window.location.href = '/index.html';
+        }
+    </script>
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col md:flex-row">
 
@@ -14,7 +21,7 @@
     <aside class="w-full md:w-64 bg-slate-900 border-l border-slate-800 flex flex-col justify-between p-6 shrink-0">
         <div>
             <div class="text-indigo-400 font-bold text-2xl tracking-wider mb-8">
-                lunes<span class="text-white">.script</span>
+                lunex<span class="text-white">.script</span>
             </div>
             <nav class="space-y-2">
                 <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-600/10 text-indigo-400 font-medium text-xs">السكريبتات الخاصة</a>
@@ -22,7 +29,7 @@
             </nav>
         </div>
         <div class="mt-6 md:mt-0">
-            <button onclick="logout()" class="w-full text-right px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition text-xs font-medium">تسجيل الخروج</button>
+            <button onclick="logout()" class="w-full text-right px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition text-xs font-medium cursor-pointer">تسجيل الخروج</button>
         </div>
     </aside>
 
@@ -50,15 +57,15 @@
                         <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-2.5 py-1 rounded-full">محمي بنجاح</span>
                     </div>
                     <p class="text-slate-400 text-[11px] font-mono mb-4 bg-slate-950 p-3 rounded-xl border border-slate-800 truncate" id="execLink1">
-                        loadstring(game:HttpGet("https://lunes.script/exec?token=a8f9b..."))()
+                        loadstring(game:HttpGet("https://lunex.script/exec?token=a8f9b..."))()
                     </p>
                 </div>
 
                 <div>
                     <!-- Short URL & Copy Button -->
                     <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 mb-4">
-                        <span id="shortUrl1" class="text-xs text-slate-300 font-mono">https://lunes.script/s/blat2</span>
-                        <button onclick="copyText('https://lunes.script/s/blat2')" class="text-indigo-400 hover:text-indigo-300 text-xs font-medium transition cursor-pointer">نسخ الرابط</button>
+                        <span id="shortUrl1" class="text-xs text-slate-300 font-mono">https://lunex.script/s/blat2</span>
+                        <button onclick="copyText('https://lunex.script/s/blat2')" class="text-indigo-400 hover:text-indigo-300 text-xs font-medium transition cursor-pointer">نسخ الرابط</button>
                     </div>
 
                     <div class="flex gap-2">
@@ -82,6 +89,7 @@
         }
 
         function logout() {
+            localStorage.removeItem('lunex_user');
             window.location.href = '/index.html';
         }
     </script>
