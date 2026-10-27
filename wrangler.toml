@@ -3,3 +3,8 @@ compatibility_date = "2026-10-23"
 
 [assets]
 directory = "./public"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "lunexscriptsdb"
+database_id = "e917221b-44fa-489a-9eb3-f361b4032205"
