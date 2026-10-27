@@ -1,3 +1,10 @@
+async function hashPassword(password) {
+  const msgBuffer = new TextEncoder().encode(password);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
 export async function onRequestPost(context) {
   try {
     const { request, env } = context;
@@ -5,15 +12,29 @@ export async function onRequestPost(context) {
 
     if (!username || !email || !password) {
       return new Response(JSON.stringify({ success: false, error: 'جميع الحقول مطلوبة' }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
+        status: 400, headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // توليد رمز تحقق من 6 أرقام
+    const existing = await env.DB.prepare("SELECT * FROM users WHERE email = ? OR username = ?").bind(email, username).first();
+    if (existing) {
+      return new Response(JSON.stringify({ success: false, error: 'البريد أو اسم المستخدم مستخدم مسبقاً' }), {
+        status: 400, headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    const userId = 'usr_' + Date.now() + Math.random().toString(36).substring(2, 7);
+    const password_hash = await hashPassword(password);
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // إرسال البريد الإلكتروني عبر Resend API باستخدام المفتاح السري المخفي في Cloudflare
+    await env.DB.prepare(
+      "INSERT INTO users (id, username, email, password_hash, is_verified) VALUES (?, ?, ?, ?, 0)"
+    ).bind(userId, username, email, password_hash).run();
+
+    await env.DB.prepare(
+      "INSERT INTO verification_codes (email, code, expires_at) VALUES (?, ?, datetime('now', '+10 minutes'))"
+    ).bind(email, verificationCode).run();
+
     const resendResponse = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
@@ -27,35 +48,28 @@ export async function onRequestPost(context) {
         html: `
           <div dir="rtl" style="font-family: Arial, sans-serif; padding: 25px; background: #0f172a; color: #f8fafc; border-radius: 12px;">
             <h2 style="color: #818cf8; margin-top: 0;">مرحباً ${username} في Lunex Scripts</h2>
-            <p>شكراً لتسجيلك معنا. رمز التحقق الخاص بك هو:</p>
+            <p>رمز التحقق الخاص بك هو:</p>
             <div style="background: #1e293b; color: #34d399; font-size: 32px; font-weight: bold; letter-spacing: 8px; padding: 15px; text-align: center; border-radius: 8px; margin: 20px 0;">
               ${verificationCode}
             </div>
-            <p style="color: #94a3b8; font-size: 13px;">هذا الرمز صالح لمدة 10 دقائق فقط. لا تقم بمشاركته مع أي شخص.</p>
+            <p style="color: #94a3b8; font-size: 13px;">هذا الرمز صالح لمدة 10 دقائق فقط.</p>
           </div>
         `,
       }),
     });
 
-    const resendData = await resendResponse.json();
-
     if (!resendResponse.ok) {
-      return new Response(JSON.stringify({ success: false, error: resendData }), {
-        status: 400,
-        headers: { 'Content-Type': 'application/json' }
+      return new Response(JSON.stringify({ success: false, error: 'فشل إرسال البريد الإلكتروني عبر Resend' }), {
+        status: 400, headers: { 'Content-Type': 'application/json' }
       });
     }
 
-    // ملاحظة: هنا يتم تخزين بيانات المستخدم ورمز التحقق في قاعدة بيانات Cloudflare D1 لاحقاً
-
-    return new Response(JSON.stringify({ success: true, message: 'تم إرسال رمز التحقق بنجاح إلى بريدك الإلكتروني' }), {
+    return new Response(JSON.stringify({ success: true, message: 'تم إرسال رمز التحقق بنجاح' }), {
       headers: { 'Content-Type': 'application/json' }
     });
-
   } catch (err) {
     return new Response(JSON.stringify({ success: false, error: err.message }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
+      status: 500, headers: { 'Content-Type': 'application/json' }
     });
   }
 }
