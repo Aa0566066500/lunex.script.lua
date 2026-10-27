@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - lunes.script</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Cairo', sans-serif; }</style>
+</head>
+<body class="bg-slate-950 text-slate-100 min-h-screen flex flex-col md:flex-row">
+
+    <!-- Sidebar -->
+    <aside class="w-full md:w-64 bg-slate-900 border-l border-slate-800 flex flex-col justify-between p-6 shrink-0">
+        <div>
+            <div class="text-indigo-400 font-bold text-2xl tracking-wider mb-8">
+                lunes<span class="text-white">.script</span>
+            </div>
+            <nav class="space-y-2">
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl bg-indigo-600/10 text-indigo-400 font-medium text-xs">السكريبتات الخاصة</a>
+                <a href="#" class="flex items-center gap-3 px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-slate-200 transition text-xs">إعدادات الحساب</a>
+            </nav>
+        </div>
+        <div class="mt-6 md:mt-0">
+            <button onclick="logout()" class="w-full text-right px-4 py-3 rounded-xl text-red-400 hover:bg-red-500/10 transition text-xs font-medium">تسجيل الخروج</button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-6 md:p-10 overflow-y-auto">
+        <!-- Top Header -->
+        <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8 pb-4 border-b border-slate-800">
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold">لوحة التحكم</h1>
+                <p class="text-slate-400 text-xs">إدارة وحماية سكريبتاتك بكفاءة عالية على Cloudflare</p>
+            </div>
+            <button onclick="openAddModal()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2.5 rounded-xl font-bold text-xs transition shadow-lg shadow-indigo-600/20 cursor-pointer">
+                + إضافة سكريبت جديد
+            </button>
+        </header>
+
+        <!-- Scripts Grid -->
+        <div id="scriptsGrid" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            
+            <!-- Sample Script Card -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between shadow-xl">
+                <div>
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="font-bold text-base text-slate-100">Blat Game Hub V2</h3>
+                        <span class="bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] px-2.5 py-1 rounded-full">محمي بنجاح</span>
+                    </div>
+                    <p class="text-slate-400 text-[11px] font-mono mb-4 bg-slate-950 p-3 rounded-xl border border-slate-800 truncate" id="execLink1">
+                        loadstring(game:HttpGet("https://lunes.script/exec?token=a8f9b..."))()
+                    </p>
+                </div>
+
+                <div>
+                    <!-- Short URL & Copy Button -->
+                    <div class="flex items-center justify-between bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 mb-4">
+                        <span id="shortUrl1" class="text-xs text-slate-300 font-mono">https://lunes.script/s/blat2</span>
+                        <button onclick="copyText('https://lunes.script/s/blat2')" class="text-indigo-400 hover:text-indigo-300 text-xs font-medium transition cursor-pointer">نسخ الرابط</button>
+                    </div>
+
+                    <div class="flex gap-2">
+                        <button class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2 rounded-xl text-xs font-medium transition cursor-pointer">تعديل الكود</button>
+                        <button class="bg-red-500/10 hover:bg-red-500/20 text-red-400 px-4 py-2 rounded-xl text-xs font-medium transition cursor-pointer">حذف</button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        function copyText(text) {
+            navigator.clipboard.writeText(text);
+            alert('تم نسخ الرابط بنجاح!');
+        }
+
+        function openAddModal() {
+            alert('نافذة إضافة سكريبت جديد (سيتم ربطها بقاعدة البيانات قريباً)');
+        }
+
+        function logout() {
+            window.location.href = '/index.html';
+        }
+    </script>
+</body>
+</html>
